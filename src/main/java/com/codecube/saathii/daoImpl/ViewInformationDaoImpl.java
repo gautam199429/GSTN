@@ -45,9 +45,7 @@ public class ViewInformationDaoImpl implements ViewInformationDao{
 			@Override
 			public ViewInformation getInformationById(String userId) {
 				return entityManager.find(ViewInformation.class, userId);
-			}
-
-			
+			}			
 }
 	
 

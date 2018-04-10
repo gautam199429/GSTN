@@ -27,6 +27,8 @@ import com.codecube.saathii.entity.GstEntityOtp;
 import com.codecube.saathii.entity.GstErrorCodes;
 import com.codecube.saathii.service.ViewInformationService;
 import com.codecube.saathii.utility.PasswordUtility;
+import com.codecube.saathii.utility.UserPasswordAuthentication;
+
 import io.swagger.annotations.Api;
 
 @RestController
@@ -45,6 +47,9 @@ public class GstOtpController {
     @Autowired
 	SessionFactory sessionFactory;
     
+    @Autowired
+    UserPasswordAuthentication upa;
+    
 	@RequestMapping(value ="/otprequest/{userId}/{password}", method= RequestMethod.POST, headers = "Content-type=application/json")
     public JSONObject OTPRequest(@RequestBody GstEntityOtp RequestPayload,@PathVariable("userId") String userId,@PathVariable("password") String password,
 			@RequestHeader("clientid") String clientid,
@@ -56,7 +61,7 @@ public class GstOtpController {
     {
 		String result = "{\"error\":\"Please Enter Valid userId or Password\"}";
 		
-		if(userAuthentication(userId, password)==true)
+		if(upa.IsAuthenticate(userId, password)==true)
 		{
 		try {
 		 URL url = new URL(BASE_URL);
@@ -143,34 +148,34 @@ public class GstOtpController {
 		JSONObject json = (JSONObject) parser1.parse(result);
 		return json;
 	}
-	private boolean userAuthentication(String userId, String passord) throws Exception
-	{
-	String pasenc = pas.encryption(passord);
-	System.out.println(pasenc);
-	Session session = sessionFactory.openSession();
-	Transaction tx = session.beginTransaction();
-	boolean userFound = false;
-	String SQL_QUERY ="select * from usertbls u where u.userid = :userid and password = :password";
-	Query query = session.createNativeQuery(SQL_QUERY);
-	query.setParameter("userid",userId);
-	query.setParameter("password",pasenc);
-	List list = query.list();
-	if ((list != null) && (list.size() > 0)) {
-		userFound= true;
-		System.out.println("=============================================================================================");
-		System.out.println("\t\tUSER FOUND");
-		System.out.println("=============================================================================================");
-	}
-	else
-	{
-		System.out.println("=============================================================================================");
-		System.out.println("\t\tUSER NOT FOUND");
-		System.out.println("=============================================================================================");
-	}
-	tx.commit();
-	session.close();
-	return userFound;    	
-	}
+//	private boolean userAuthentication(String userId, String passord) throws Exception
+//	{
+//	String pasenc = pas.encryption(passord);
+//	System.out.println(pasenc);
+//	Session session = sessionFactory.openSession();
+//	Transaction tx = session.beginTransaction();
+//	boolean userFound = false;
+//	String SQL_QUERY ="select * from usertbls u where u.userid = :userid and password = :password";
+//	Query query = session.createNativeQuery(SQL_QUERY);
+//	query.setParameter("userid",userId);
+//	query.setParameter("password",pasenc);
+//	List list = query.list();
+//	if ((list != null) && (list.size() > 0)) {
+//		userFound= true;
+//		System.out.println("=============================================================================================");
+//		System.out.println("\t\tUSER FOUND");
+//		System.out.println("=============================================================================================");
+//	}
+//	else
+//	{
+//		System.out.println("=============================================================================================");
+//		System.out.println("\t\tUSER NOT FOUND");
+//		System.out.println("=============================================================================================");
+//	}
+//	tx.commit();
+//	session.close();
+//	return userFound;    	
+//	}
 }
 
 

@@ -24,6 +24,7 @@ import com.codecube.saathii.entity.GstErrorCodes;
 import com.codecube.saathii.entity.GstToken;
 import com.codecube.saathii.service.ViewInformationService;
 import com.codecube.saathii.utility.PasswordUtility;
+import com.codecube.saathii.utility.UserPasswordAuthentication;
 
 import io.swagger.annotations.Api;
 
@@ -40,6 +41,9 @@ public class GstAuthtokenController {
 	
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	UserPasswordAuthentication upa;
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@RequestMapping(value ="/gmail/{userId}/{password}", method= RequestMethod.POST, headers = "Content-type=application/json")	
@@ -58,7 +62,7 @@ public class GstAuthtokenController {
 		
 		/* user Authentication */
 		
-		if(userAuthentication(userId, password)==true)
+		if(upa.IsAuthenticate(userId, password)==true)
 		{
 		try {
 		 URL url = new URL(BASE_URL);
@@ -153,34 +157,34 @@ public class GstAuthtokenController {
 		return json;
 		
 	}
-	private boolean userAuthentication(String userId, String passord) throws Exception
-		{
-		System.out.println("Starting..........Encrypting the password");
-		String pasenc = pas.encryption(passord);
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
-		boolean userFound = false;
-		String SQL_QUERY ="select * from usertbls u where u.userid = :userid and password = :password";
-		Query query = session.createNativeQuery(SQL_QUERY);
-		query.setParameter("userid",userId);
-		query.setParameter("password",pasenc);
-		List list = query.list();
-		if ((list != null) && (list.size() > 0)) {
-			userFound= true;
-			System.out.println("=============================================================================================");
-			System.out.println("\t\tUSER FOUND");
-			System.out.println("=============================================================================================");
-		}
-		else
-		{
-			System.out.println("=============================================================================================");
-			System.out.println("\t\tUSER NOT FOUND");
-			System.out.println("=============================================================================================");
-		}
-		tx.commit();
-		session.close();
-		return userFound;    	
-		}
+//	private boolean userAuthentication(String userId, String passord) throws Exception
+//		{
+//		System.out.println("Starting..........Encrypting the password");
+//		String pasenc = pas.encryption(passord);
+//		Session session = sessionFactory.openSession();
+//		Transaction tx = session.beginTransaction();
+//		boolean userFound = false;
+//		String SQL_QUERY ="select * from usertbls u where u.userid = :userid and password = :password";
+//		Query query = session.createNativeQuery(SQL_QUERY);
+//		query.setParameter("userid",userId);
+//		query.setParameter("password",pasenc);
+//		List list = query.list();
+//		if ((list != null) && (list.size() > 0)) {
+//			userFound= true;
+//			System.out.println("=============================================================================================");
+//			System.out.println("\t\tUSER FOUND");
+//			System.out.println("=============================================================================================");
+//		}
+//		else
+//		{
+//			System.out.println("=============================================================================================");
+//			System.out.println("\t\tUSER NOT FOUND");
+//			System.out.println("=============================================================================================");
+//		}
+//		tx.commit();
+//		session.close();
+//		return userFound;    	
+//		}
     }
 
 //	private String clientId ="l7xx5edefdd923ad438eb5b332a73269f812";
